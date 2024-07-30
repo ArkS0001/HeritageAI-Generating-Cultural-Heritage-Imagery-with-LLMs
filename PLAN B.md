@@ -159,3 +159,151 @@ Summary
     Postprocess the image: Fine-tune using image editing tools.
 
 This is a simplified version of the process, and the results can vary based on the complexity and quality of the input image. Fine-tuning the generative model and preprocessing steps can help achieve better results. If you have a specific image and model in mind, please provide them, and I can help tailor the implementation further.
+
+Step 1: Set Up Environment
+
+First, ensure you have the necessary libraries installed:
+
+bash
+
+pip install opencv-python numpy torch torchvision matplotlib gdown
+
+Step 2: Download the Pre-trained Model
+
+You can use gdown to download the pre-trained model weights from Google Drive.
+
+      import gdown
+      
+      # URL to the pre-trained model file
+      model_url = 'https://drive.google.com/uc?id=1qdWbW0_0XBIkq2PZBdlrwbpa7GnGZBF7'
+      model_path = 'deepfillv2.pth'
+      
+      # Download the model
+      gdown.download(model_url, model_path, quiet=False)
+      
+   Step 3: Implement the Full Process
+   
+      
+      # Import necessary libraries
+      import cv2
+      import numpy as np
+      import matplotlib.pyplot as plt
+      import torch
+      import torch.nn as nn
+      import torchvision.transforms as transforms
+      from torchvision.utils import save_image
+      import gdown
+      
+      # Define the DeepFill v2 generator model
+      class Generator(nn.Module):
+          def __init__(self):
+              super(Generator, self).__init__()
+              self.encoder = nn.Sequential(
+                  nn.Conv2d(4, 64, kernel_size=5, stride=1, padding=2),
+                  nn.ReLU(),
+                  nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),
+                  nn.ReLU(),
+                  nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1),
+                  nn.ReLU(),
+                  nn.Conv2d(256, 512, kernel_size=3, stride=2, padding=1),
+                  nn.ReLU(),
+                  nn.Conv2d(512, 512, kernel_size=3, stride=2, padding=1),
+                  nn.ReLU()
+              )
+              self.middle = nn.Sequential(
+                  nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=2, dilation=2),
+                  nn.ReLU(),
+                  nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=4, dilation=4),
+                  nn.ReLU(),
+                  nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=8, dilation=8),
+                  nn.ReLU(),
+                  nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=16, dilation=16),
+                  nn.ReLU()
+              )
+              self.decoder = nn.Sequential(
+                  nn.ConvTranspose2d(512, 256, kernel_size=4, stride=2, padding=1),
+                  nn.ReLU(),
+                  nn.ConvTranspose2d(256, 128, kernel_size=4, stride=2, padding=1),
+                  nn.ReLU(),
+                  nn.ConvTranspose2d(128, 64, kernel_size=4, stride=2, padding=1),
+                  nn.ReLU(),
+                  nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1),
+                  nn.Tanh()
+              )
+      
+          def forward(self, x):
+              x = self.encoder(x)
+              x = self.middle(x)
+              x = self.decoder(x)
+              return x
+      
+      # Function to preprocess the image
+      def preprocess_image(image_path):
+          # Load the image
+          image = cv2.imread(image_path)
+          # Convert to RGB
+          image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+          # Resize to 256x256
+          image = cv2.resize(image, (256, 256))
+          # Create a mask (this is a simple example, a real mask should come from the user)
+          mask = np.zeros_like(image)
+          mask[100:150, 100:150, :] = 1  # Simulate some missing area
+          # Normalize and convert to tensors
+          image = transforms.ToTensor()(image)
+          mask = transforms.ToTensor()(mask)
+          # Concatenate image and mask
+          image_with_mask = torch.cat((image, mask), dim=0)
+          return image, mask, image_with_mask.unsqueeze(0)
+      
+      # Function to generate an image using the generator
+      def generate_image(generator, image_with_mask):
+          with torch.no_grad():
+              generated_image = generator(image_with_mask).cpu()
+          return generated_image
+      
+      # Main function
+      def main(image_path, model_path):
+          # Preprocess the image
+          original_image, mask, image_with_mask = preprocess_image(image_path)
+      
+          # Initialize and load the pre-trained generator
+          generator = Generator()
+          generator.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+          generator.eval()
+      
+          # Generate the reconstructed image
+          reconstructed_image = generate_image(generator, image_with_mask)
+      
+          # Save and display the generated image
+          save_image(reconstructed_image, 'reconstructed_image.png')
+      
+          # Display the original, mask, and reconstructed images
+          plt.figure(figsize=(15, 5))
+          plt.subplot(1, 3, 1)
+          plt.title('Original Image')
+          plt.imshow(np.transpose(original_image.numpy(), (1, 2, 0)))
+          plt.subplot(1, 3, 2)
+          plt.title('Mask')
+          plt.imshow(np.transpose(mask.numpy(), (1, 2, 0)))
+          plt.subplot(1, 3, 3)
+          plt.title('Reconstructed Image')
+          plt.imshow(np.transpose(reconstructed_image[0].numpy(), (1, 2, 0)))
+          plt.show()
+      
+      # Set paths to the image and model
+      image_path = 'path_to_your_image.jpg'
+      model_path = 'deepfillv2.pth'
+      
+      # Download the pre-trained model if not already downloaded
+      gdown.download('https://drive.google.com/uc?id=1qdWbW0_0XBIkq2PZBdlrwbpa7GnGZBF7', model_path, quiet=False)
+      
+      # Run the main function
+      main(image_path, model_path)
+
+Notes:
+
+    Mask Creation: The mask in this code is a simple example. In a real-world application, you would create a mask to cover the damaged or missing areas of the building.
+    Image Resizing: The images are resized to 256x256 pixels for simplicity. You might need to adjust this based on the resolution of your input images.
+    Pre-trained Model: The DeepFill v2 model weights are assumed to be stored in Google Drive. You can replace the URL with another model if you have different weights.
+
+Ensure you upload your image to the Colab environment and update the image_path accordingly. This script will preprocess the image, apply the model, and display the original, mask, and reconstructed images side by side.
