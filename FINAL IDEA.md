@@ -1,6 +1,6 @@
-# Heritage AI: Cultural Heritage Preservation and Restoration Using GenAI
+## HeritageAI: Cultural Heritage Preservation and Restoration Using GenAI
 
-Problem Statement
+# Problem Statement
 
 Cultural heritage sites and artifacts are vital to the historical, artistic, and social fabric of civilizations. These invaluable assets, however, are at risk from natural disasters, environmental degradation, human conflicts, and the ravages of time. Traditional restoration methods can be slow, costly, and sometimes limited in their scope, leading to potential loss of cultural knowledge and historical context.
 The challenge is to develop innovative, scalable, and accessible solutions for restoring and preserving these treasures. Advanced AI technologies offer promising tools to accurately reconstruct and enhance damaged heritage sites and artifacts, helping ensure their survival for future generations.
@@ -11,7 +11,7 @@ Heritage AI is a web application designed to restore and preserve cultural herit
 
 Heritage AI aims to make the restoration process more efficient and accessible. The application allows users to upload images of damaged sites or artifacts and uses advanced generative AI diffuser models, fine-tuned based on the strength of the damage, to generate restored images and 3D models. Users can view these models in augmented reality (AR), providing an immersive experience that helps them understand the historical context and significance of these sites and artifacts.
 
-Features to Build:
+# Features to Build:
 
     Image Upload and Text Description:
         Users can upload images of damaged heritage sites or artifacts.
@@ -23,6 +23,9 @@ Features to Build:
     3D Model Generation:
         From the restored images, the application creates 3D models, offering a more comprehensive view of the site or artifact.
 
+    360-Degree Video Integration:
+        Provide 360-degree videos of the restored sites or artifacts, allowing users to explore the restoration from multiple angles before moving to the AR view.
+
     Augmented Reality (AR) View:
         Users can view the 3D models in augmented reality, allowing them to place these models in their real-world environment through their device's camera.
         The AR view includes descriptive information about the site or artifact, providing educational context.
@@ -31,9 +34,8 @@ Features to Build:
         Users can download the restored images and 3D models in various formats for further use.
 
     Database Storage:
-        All user uploads, restored images, and 3D models are stored in a database for easy access and analysis.
-
-Good-to-Have Features:
+        All user uploads, restored images, 3D models, and 360-degree videos are stored in a database for easy access and analysis.
+# Good-to-Have Features:
 
     Expanded Dataset:
         Continuously improve the accuracy and variety of the restoration models by expanding the dataset used for training AI models.
@@ -53,7 +55,7 @@ Good-to-Have Features:
     Partnerships:
         Collaborate with museums, cultural institutions, and educational organizations to enhance the application's content and reach.
 
-Constraints:
+# Constraints:
 
     Data Quality:
         The quality of the input images and descriptions can significantly impact the accuracy and quality of the restoration. Low-quality images may lead to less accurate restorations.
@@ -64,7 +66,7 @@ Constraints:
     AR Compatibility:
         The AR functionality requires devices with compatible hardware and software capabilities, which may limit accessibility for some users.
 
-Known Issues:
+# Known Issues:
 
     Accuracy of Restorations:
         The restored images and 3D models are generated based on AI predictions, which may not always be historically accurate or fully representative of the original state.
@@ -79,4 +81,4 @@ Known Issues:
         Generative AI models sometimes generate details that weren't present in the original data, a phenomenon known as "hallucination." This issue requires further advanced fine-tuning to minimize inaccuracies and ensure restorations are as accurate as possible.
 
 
-Heritage AI seeks to combine technology with cultural preservation, offering an innovative way to experience and restore our shared history.
+HeritageAI seeks to combine technology with cultural preservation, offering an innovative way to experience and restore our shared history.
